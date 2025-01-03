@@ -3,29 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Majerus Links</title>
+    <title>John Majerus - Links</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             text-align: center;
             margin: 0;
-            padding: 0;
+            padding: 40px 0;
+            background-color: #f4f4f4;
         }
-        iframe {
-            width: 90%;
-            height: 800px;
-            border: none;
+        .container {
+            margin: 0 auto;
+            max-width: 600px;
+        }
+        .link-card {
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+        .link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        .link-card a {
+            text-decoration: none;
+            color: #0078D7;
+            font-size: 1.5em;
         }
     </style>
 </head>
 <body>
-    <h1>Follow Me</h1>
-    <iframe class="airtable-embed" 
-            src="https://airtable.com/appngnQcIHr8WDgaT/shrAODfoYeyh0N0Cu/tbl0NCBp8FGMXE3pT" 
-            frameborder="0" 
-            onmousewheel="" 
-            width="100%" 
-            height="800">
-    </iframe>
+    <div class="container">
+        <h1>Follow Me</h1>
+        <div id="links"></div>
+    </div>
+
+    <script>
+        fetch('https://billowing-cherry-4282.jmajerus.workers.dev/')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('links');
+                data.records.forEach(record => {
+                    const linkCard = document.createElement('div');
+                    linkCard.className = 'link-card';
+                    linkCard.innerHTML = `
+                        <a href="${record.fields.URL}" target="_blank">
+                            ${record.fields.Name}
+                        </a>
+                    `;
+                    container.appendChild(linkCard);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                document.getElementById('links').innerHTML = '<p>Failed to load links.</p>';
+            });
+    </script>
 </body>
 </html>
