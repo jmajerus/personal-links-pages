@@ -19,9 +19,9 @@ To avoid exposing Airtable API keys in the frontend, a Cloudflare Worker acts as
 ## Demo
 You can see the project live at: [Personal Links](https://personal-links-21x.pages.dev/)
 
-### Setup Instructions
+## Setup Instructions
 
-#### 1. Airtable Setup
+### 1. Airtable Setup
 1. Create an Airtable base with a table named `Links`.
 2. Add two fields:
    - **Name** (Single line text)
@@ -32,7 +32,7 @@ You can see the project live at: [Personal Links](https://personal-links-21x.pag
 
 ---
 
-#### 2. Cloudflare Worker Setup
+### 2. Cloudflare Worker Setup
 1. In the Cloudflare dashboard, go to **Workers** and create a new Worker.
 2. Replace the default code with the following:
 

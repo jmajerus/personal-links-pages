@@ -47,6 +47,14 @@
         .then(response => response.json())
         .then(data => {
             const container = document.getElementById('links');
+            
+            // Sort records alphabetically by 'Name' field
+            data.records.sort((a, b) => {
+                const nameA = a.fields.Name.toLowerCase();
+                const nameB = b.fields.Name.toLowerCase();
+                return nameA.localeCompare(nameB);
+            });
+
             data.records.forEach(record => {
                 const linkCard = document.createElement('div');
                 linkCard.className = 'link-card';
