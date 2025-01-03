@@ -44,24 +44,26 @@
 
     <script>
         fetch('https://billowing-cherry-4282.jmajerus.workers.dev/')
-            .then(response => response.json())
-            .then(data => {
-                const container = document.getElementById('links');
-                data.records.forEach(record => {
-                    const linkCard = document.createElement('div');
-                    linkCard.className = 'link-card';
-                    linkCard.innerHTML = `
-                        <a href="${record.fields.URL}" target="_blank">
-                            ${record.fields.Name}
-                        </a>
-                    `;
-                    container.appendChild(linkCard);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-                document.getElementById('links').innerHTML = '<p>Failed to load links.</p>';
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('links');
+            data.records.forEach(record => {
+                const linkCard = document.createElement('div');
+                linkCard.className = 'link-card';
+                linkCard.innerHTML = `
+                    <a href="${record.fields.URL}" target="_blank" class="link-anchor">
+                        ${record.fields.Name}
+                    </a>
+                `;
+                
+                // Make the whole card clickable
+                linkCard.onclick = () => {
+                    window.open(record.fields.URL, '_blank');
+                };
+
+                container.appendChild(linkCard);
             });
+        });
     </script>
 </body>
 </html>
