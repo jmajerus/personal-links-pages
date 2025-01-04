@@ -1,5 +1,4 @@
 name = "worker"
-type = "javascript"
 account_id = "eec00739050a8a4cbf359a1dedb8cad3"
 workers_dev = true
 
@@ -7,6 +6,7 @@ kv_namespaces = [
   { binding = "LINKS_CACHE", id = "02ae18d056774dd8b0619180c767a3e6" }
 ]
 
+main = "worker.js"  # Specify the entry point here
 
 [env.staging]
 workers_dev = true
