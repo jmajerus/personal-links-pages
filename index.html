@@ -44,35 +44,41 @@
     </div>
 
     <script>
-        fetch('https://billowing-cherry-4282.jmajerus.workers.dev/')
-        .then(response => response.json())
-        .then(data => {
-            const container = document.getElementById('links');
-            
-            // Sort records alphabetically by 'Name' field
-            data.records.sort((a, b) => {
-                const nameA = a.fields.Name.toLowerCase();
-                const nameB = b.fields.Name.toLowerCase();
-                return nameA.localeCompare(nameB);
-            });
 
-            data.records.forEach(record => {
-                const linkCard = document.createElement('div');
-                linkCard.className = 'link-card';
-                linkCard.innerHTML = `
-                    <a href="${record.fields.URL}" target="_blank" class="link-anchor">
-                        ${record.fields.Name}
-                    </a>
-                `;
-                
-                // Make the whole card clickable
-                linkCard.onclick = () => {
-                    window.open(record.fields.URL, '_blank');
-                };
+        fetchLinks();
 
-                container.appendChild(linkCard);
-            });
-        });
+        function fetchLinks() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('category') || 'personal';
+
+            const apiUrl = `https://https://personal-links-21x.pages.dev/?category=${category}`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('links');
+                    container.innerHTML = '';  // Clear previous links
+
+                    data.sort((a, b) => a.fields.Name.localeCompare(b.fields.Name));
+                    data.forEach(record => {
+                        const linkCard = createCard(record.fields.URL, record.fields.Name);
+                        container.appendChild(linkCard);
+                    });
+                });
+        }
+
+        function createCard(url, name) {
+            const card = document.createElement('div');
+            card.className = 'link-card';
+            card.innerHTML = `
+                <a href="${url}" target="_blank" class="link-anchor">
+                    ${name}
+                </a>
+            `;
+            card.onclick = () => window.open(url, '_blank');
+            return card;
+        }
+
     </script>
 </body>
 </html>
