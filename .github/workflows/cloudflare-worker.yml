@@ -3,7 +3,7 @@ name: Deploy Worker to Cloudflare
 on:
   push:
     branches:
-      - main  # Deploy when pushing to main branch
+      - main  # Trigger on main branch push
 
 jobs:
   deploy:
@@ -13,12 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Install Wrangler CLI
+        run: npm install -g wrangler
+
       - name: Publish to Cloudflare Workers
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          script: fetch-airtable-data.js
-          kv-namespaces: |
-            - binding: LINKS_CACHE
-              id: ${{ secrets.CLOUDFLARE_KV_NAMESPACE_ID }}
+        run: wrangler publish
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
