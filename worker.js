@@ -1,6 +1,6 @@
 // Cloudfare worker to fetch Airtable view data
 // Replace YOUR_SECRET_API_KEY with your Airtable API key
-const AIRTABLE_API_KEY = 'YOUR_SECRET_API_KEY';
+const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;  // Access secret from Cloudfare worker settings
 const BASE_ID = 'appngnQcIHr8WDgaT';
 const TABLE_NAME = 'Links';
 const CACHE_EXPIRATION = 3600;  // Cache for 1 hour
