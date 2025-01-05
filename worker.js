@@ -2,65 +2,63 @@
 // Usage: https://<worker_url>/links?category=personal
 export default {
     async fetch(request, env) {
+        const url = new URL(request.url);
+        const category = url.searchParams.get('category') || 'personal';
+        const cacheRefresh = url.searchParams.get('cache') === 'refresh';
+
         try {
-            const { searchParams } = new URL(request.url);
-            const category = searchParams.get('category') || 'personal';
+            let links;
 
-            console.log(`Fetching category: ${category}`);
+            if (cacheRefresh) {
+                console.log('Cache refresh triggered for:', category);
+                const freshData = await fetchFromAirtable(category, env.AIRTABLE_API_KEY);
+                links = freshData.records || [];
 
-            // Use the secret from the env object
-            const AIRTABLE_API_KEY = env.AIRTABLE_API_KEY;
-            const BASE_ID = 'appngnQcIHr8WDgaT';
-            const TABLE_NAME = 'Links';
+                console.log(`Fetched ${links.length} records. Writing to KV...`);
 
-            // Check if data is in KV cache
-            let links = await fetchCachedData(category, env);
-
-            if (links) {
-                console.log(`Cache hit for category: ${category}`);
+                // Store in KV
+                await env.LINKS_CACHE.put(category, JSON.stringify(links));
+                console.log('Successfully cached to KV:', category);
             } else {
-                console.log(`Cache miss. Fetching from Airtable...`);
-                const airtableResponse = await fetchFromAirtable(category, AIRTABLE_API_KEY, BASE_ID, TABLE_NAME);
-                
-                links = airtableResponse.records;
+                console.log('Fetching from KV for category:', category);
+                let cachedData = await env.LINKS_CACHE.get(category);
 
-                // **Debug Response (Here)**
-                const debugResponse = {
-                    message: "Airtable fetch success but no records found",
-                    airtableResponse: links || "No data"
-                };
+                if (cachedData) {
+                    console.log('Cache hit! Returning cached data.');
+                    links = JSON.parse(cachedData);
+                } else {
+                    console.log('Cache miss. Fetching from Airtable...');
+                    const airtableResponse = await fetchFromAirtable(category, env.AIRTABLE_API_KEY);
+                    links = airtableResponse.records || [];
 
-                console.log(`Fetched ${links.length || 0} records from Airtable.`);
-                
-                // Return the debug info directly
-                return new Response(JSON.stringify(debugResponse), {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*',  // CORS Header
-                    }
-                });
-
-                // Cache the result in KV
-                await cacheResponse(category, links, env);
-                console.log(`Cached response for category: ${category}`);
+                    // Store in KV after fetch
+                    await env.LINKS_CACHE.put(category, JSON.stringify(links));
+                    console.log('Data written to KV after cache miss.');
+                }
             }
 
-            // Final response if data exists
-            return new Response(JSON.stringify(links), {
+            return new Response(JSON.stringify({
+                message: 'Airtable fetch success',
+                airtableResponse: links
+            }), {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
+                    'Access-Control-Allow-Origin': '*',
                 }
             });
         } catch (error) {
-            console.error("Worker error:", error);
-            return new Response(`Internal Server Error: ${error.message}`, {
+            console.error('Worker error:', error);
+            return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
                 status: 500,
-                headers: { 'Content-Type': 'text/plain' }
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                }
             });
         }
     }
 };
+
 
 // Fetch cached data from KV
 async function fetchCachedData(category, env) {
