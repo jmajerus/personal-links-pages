@@ -51,7 +51,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             const category = urlParams.get('category') || 'personal';
 
-            const apiUrl = `https://https://personal-links-21x.pages.dev/?category=${category}`;
+            const apiUrl = `https://personal-links-21x.pages.dev/?category=${category}`;
 
             fetch(apiUrl)
                 .then(response => response.json())
