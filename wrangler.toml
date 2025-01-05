@@ -9,6 +9,10 @@ kv_namespaces = [
 main = "worker.js"  # Specify the entry point here
 compatibility_date = "2025-01-04"
 
+# wrangler.toml (wrangler v3.88.0^)
+[observability.logs]
+enabled = true
+
 [env.staging]
 workers_dev = true
 
