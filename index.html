@@ -63,20 +63,36 @@
             const apiUrl = `https://fetch-airtable-data.jmajerus.workers.dev/?category=${category}`;
 
             fetch(apiUrl)
-                .then(response => response.json())
-                .then(data => {
-                    const container = document.getElementById('links');
-                    container.innerHTML = '';  // Clear previous links
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to fetch data');
+                return response.json();
+            })
+            .then(data => {
+                const container = document.getElementById('links');
+                container.innerHTML = '';  // Clear previous links
 
-                    data.sort((a, b) => a.fields.Name.localeCompare(b.fields.Name));
-                    data.forEach(record => {
-                        const linkCard = createCard(record.fields.URL, record.fields.Name);
-                        container.appendChild(linkCard);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching links:', error);
+                const links = data.airtableResponse || [];  // Access correct field
+
+                if (links.length === 0) {
+                    container.innerHTML = '<p>No bookmarks available for this category.</p>';
+                    return;
+                }
+
+                links.sort((a, b) => a.fields.Name.localeCompare(b.fields.Name));
+                links.forEach(record => {
+                    if (!record.fields.URL || !record.fields.Name) {
+                        console.warn('Invalid record:', record);
+                        return;
+                    }
+                    const linkCard = createCard(record.fields.URL, record.fields.Name);
+                    container.appendChild(linkCard);
                 });
+            })
+            .catch(error => {
+                console.error('Error fetching links:', error);
+                alert('Failed to load bookmarks. Please try again later.');
+            });
+
         }
 
         function createCard(url, name) {
