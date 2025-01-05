@@ -28,16 +28,21 @@ async function fetchCachedData(category) {
 }
 
 export default {
-    async fetch(request) {
+    async fetch(request, env) {
         const { searchParams } = new URL(request.url);
         const category = searchParams.get('category') || 'personal';
-        
+
+        // Use the secret from the env object
+        const AIRTABLE_API_KEY = env.AIRTABLE_API_KEY;
+        const BASE_ID = 'appngnQcIHr8WDgaT';
+        const TABLE_NAME = 'Links';
+
         // Check if data is in cache
         let links = await fetchCachedData(category);
-        
+
         if (!links) {
             // Fetch from Airtable if not cached
-            const airtableResponse = await fetchFromAirtable(category);
+            const airtableResponse = await fetchFromAirtable(category, AIRTABLE_API_KEY, BASE_ID, TABLE_NAME);
             links = airtableResponse.records;
 
             // Cache the result
