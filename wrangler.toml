@@ -6,7 +6,8 @@ kv_namespaces = [
   { binding = "LINKS_CACHE", id = "02ae18d056774dd8b0619180c767a3e6" }
 ]
 
-main = "worker.js"  # Specify the entry point here
+main = "worker.js" # Entry point
+type = "javascript"  # Switch to ES module format
 compatibility_date = "2025-01-04"
 
 # wrangler.toml (wrangler v3.88.0^)
