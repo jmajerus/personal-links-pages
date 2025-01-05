@@ -38,18 +38,22 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Follow Me</h1>
-        <div id="links"></div>
-    </div>
+    <h1 id="page-title">Follow Me</h1>
+    <div id="links"></div>
 
     <script>
-
+        // Fetch links and dynamically update heading
         fetchLinks();
 
         function fetchLinks() {
             const urlParams = new URLSearchParams(window.location.search);
             const category = urlParams.get('category') || 'personal';
+
+            // Update heading based on category
+            const pageTitle = document.getElementById('page-title');
+            if (category !== 'personal') {
+                pageTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1) + ' Bookmarks';
+            }
 
             const apiUrl = `https://fetch-airtable-data.jmajerus.workers.dev/?category=${category}`;
 
@@ -64,6 +68,9 @@
                         const linkCard = createCard(record.fields.URL, record.fields.Name);
                         container.appendChild(linkCard);
                     });
+                })
+                .catch(error => {
+                    console.error('Error fetching links:', error);
                 });
         }
 
@@ -78,7 +85,6 @@
             card.onclick = () => window.open(url, '_blank');
             return card;
         }
-
     </script>
 </body>
 </html>

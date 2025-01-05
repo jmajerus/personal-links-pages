@@ -1,3 +1,6 @@
+# note: use the following command to set the Airtable personal access token:
+# wrangler secret put AIRTABLE_API_KEY
+
 name = "fetch-airtable-data"
 account_id = "eec00739050a8a4cbf359a1dedb8cad3"
 workers_dev = true
@@ -7,7 +10,6 @@ kv_namespaces = [
 ]
 
 main = "worker.js" # Entry point
-type = "javascript"  # Switch to ES module format
 compatibility_date = "2025-01-04"
 
 # wrangler.toml (wrangler v3.88.0^)
