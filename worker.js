@@ -88,7 +88,8 @@ async function fetchFromAirtable(category, apiKey, baseId, tableName) {
 
     const response = await fetch(url, {
         headers: {
-            'Authorization': `Bearer ${apiKey}`
+            'Authorization': `Bearer ${apiKey}`,
+            'Access-Control-Allow-Origin': '*',  // CORS Header
         }
     });
 
