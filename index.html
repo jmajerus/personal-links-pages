@@ -54,7 +54,7 @@
             // Update heading based on category
             const pageTitle = document.getElementById('page-title');
             if (category.toLowerCase() === 'bookmarks') {
-                pageTitle.TextContent = 'Bookmarks';
+                pageTitle.textContent = 'Bookmarks';
             }
             else if (category !== 'personal') {
                 pageTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1) + ' Bookmarks';
