@@ -35,7 +35,8 @@ export default {
                 // Return the debug info directly
                 return new Response(JSON.stringify(debugResponse), {
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*',  // CORS Header
                     }
                 });
 
