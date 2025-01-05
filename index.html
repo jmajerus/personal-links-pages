@@ -39,7 +39,9 @@
 </head>
 <body>
     <h1 id="page-title">Follow Me</h1>
-    <div id="links"></div>
+    <div class="container">
+        <div id="links"></div>
+    </div>
 
     <script>
         // Fetch links and dynamically update heading
@@ -51,7 +53,10 @@
 
             // Update heading based on category
             const pageTitle = document.getElementById('page-title');
-            if (category !== 'personal') {
+            if (category.toLowerCase() === 'bookmarks') {
+                pageTitle.TextContent = 'Bookmarks';
+            }
+            else if (category !== 'personal') {
                 pageTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1) + ' Bookmarks';
             }
 
