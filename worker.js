@@ -11,15 +11,12 @@ export default {
             const BASE_ID = 'appngnQcIHr8WDgaT';
             const TABLE_NAME = 'Links';
 
-            // Check if data is in KV cache
             let links = await fetchCachedData(category, env);
 
             if (!links) {
-                // Fetch from Airtable if not cached
                 const airtableResponse = await fetchFromAirtable(category, AIRTABLE_API_KEY, BASE_ID, TABLE_NAME);
                 links = airtableResponse.records;
 
-                // Cache the result in KV
                 await cacheResponse(category, links, env);
             }
 
@@ -31,10 +28,14 @@ export default {
             });
         } catch (error) {
             console.error("Worker error:", error);
-            return new Response('Internal Server Error', { status: 500 });
+            return new Response(`Internal Server Error: ${error.message}`, {
+                status: 500,
+                headers: { 'Content-Type': 'text/plain' }
+            });
         }
     }
 };
+
 
 // Fetch cached data from KV
 async function fetchCachedData(category, env) {
