@@ -4,7 +4,8 @@ export default {
     async fetch(request, env) {
         const url = new URL(request.url);
         const category = url.searchParams.get('category') || 'personal';
-        const cacheRefresh = url.searchParams.get('cache') === 'refresh';
+        //const cacheRefresh = url.searchParams.get('cache') === 'refresh';
+        const cacheRefresh = true; // Set to true to force cache refresh
 
         const BASE_ID = env.BASE_ID || 'undefined';
         const TABLE_NAME = env.TABLE_NAME || 'undefined';
