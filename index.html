@@ -48,7 +48,9 @@
         fetchLinks();
 
         function fetchLinks() {
-            const urlParams = new URLSearchParams(window.location.search);
+            // Capture full query string from current URL
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
             const category = urlParams.get('category') || 'personal';
 
             // Update heading based on category
@@ -59,8 +61,9 @@
             else if (category !== 'personal') {
                 pageTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1) + ' Bookmarks';
             }
-
-            const apiUrl = `https://fetch-airtable-data.jmajerus.workers.dev/?category=${category}`;
+    
+            // Append the query string to the worker request
+            const apiUrl = `https://fetch-airtable-data.jmajerus.workers.dev/${queryString}`;
 
             fetch(apiUrl)
             .then(response => {
