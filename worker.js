@@ -11,58 +11,55 @@ export default {
         const AIRTABLE_API_KEY = env.AIRTABLE_API_KEY || 'undefined';
 
         if (BASE_ID === 'undefined' || TABLE_NAME === 'undefined' || AIRTABLE_API_KEY === 'undefined') {
-            console.error('Error: Missing BASE_ID or TABLE_NAME');
+            console.error('Error: Missing BASE_ID or TABLE_NAME or AIRTABLE_API_KEY');
             return new Response('Internal Server Error: Missing Airtable config.', { status: 500 });
         }
 
+        let links = [];
+
         try {
-            let links;
-
+            // Step 1: Refresh Cache by Deleting
             if (cacheRefresh) {
-                console.log('Cache refresh triggered for:', category);
-                const freshData = await fetchFromAirtable(category, AIRTABLE_API_KEY, BASE_ID, TABLE_NAME);
-                links = freshData.records || [];
-
-                console.log(`Fetched ${links.length} records. Writing to KV...`);
-
-                // Store in KV
-                await env.LINKS_CACHE.put(category, JSON.stringify(links));
-                console.log('Successfully cached to KV:', category);
-            } else {
-                console.log('Fetching from KV for category:', category);
-                let cachedData = await env.LINKS_CACHE.get(category);
-
-                if (cachedData) {
-                    console.log('Cache hit! Returning cached data.');
-                    links = JSON.parse(cachedData);
-                } else {
-                    console.log('Cache miss. Fetching from Airtable...');
-                    const airtableResponse = await fetchFromAirtable(category, AIRTABLE_API_KEY, BASE_ID, TABLE_NAME);
-                    links = airtableResponse.records || [];
-
-                    // Store in KV after fetch
-                    await env.LINKS_CACHE.put(category, JSON.stringify(links));
-                    console.log('Data written to KV after cache miss.');
-                }
+                await env.LINKS_CACHE.delete(category);
+                console.log(`Cache cleared for category: ${category}`);
             }
 
-            return new Response(JSON.stringify({
-                message: 'Airtable fetch success',
-                airtableResponse: links
-            }), {
+            // Step 2: Attempt to Fetch from Cache
+            console.log('Fetching from KV for category:', category);
+            let cachedData = await env.LINKS_CACHE.get(category);
+
+            if (cachedData) {
+                console.log('Cache hit! Returning cached data.');
+                links = JSON.parse(cachedData);
+            } else {
+                // Step 3: Cache Miss – Fetch from Airtable
+                console.log('Cache miss. Fetching from Airtable...');
+                const airtableResponse = await fetchFromAirtable(category, AIRTABLE_API_KEY, BASE_ID, TABLE_NAME);
+                links = airtableResponse.records || [];
+
+                // Step 4: Store in Cache After Fetch
+                await env.LINKS_CACHE.put(category, JSON.stringify(links));
+                console.log('Data written to KV after cache miss.');
+            }
+
+            // Return Final Response (Cached or Fresh Data)
+            return new Response(JSON.stringify(links), {
                 headers: {
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*',
                 }
             });
         } catch (error) {
-            console.error('Worker error:', error);
-            return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
+            console.error('Worker Error:', error);
+
+            // Include detailed error info in response
+            return new Response(JSON.stringify({
+                error: 'Internal Server Error',
+                message: error.message,
+                stack: error.stack.split('\n').slice(0, 5)  // Limit stack trace length
+            }), {
                 status: 500,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*',
-                }
+                headers: { 'Content-Type': 'application/json' }
             });
         }
     }
