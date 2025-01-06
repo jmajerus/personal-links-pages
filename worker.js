@@ -6,12 +6,21 @@ export default {
         const category = url.searchParams.get('category') || 'personal';
         const cacheRefresh = url.searchParams.get('cache') === 'refresh';
 
+        const BASE_ID = env.BASE_ID || 'undefined';
+        const TABLE_NAME = env.TABLE_NAME || 'undefined';
+        const AIRTABLE_API_KEY = env.AIRTABLE_API_KEY || 'undefined';
+
+        if (BASE_ID === 'undefined' || TABLE_NAME === 'undefined' || AIRTABLE_API_KEY === 'undefined') {
+            console.error('Error: Missing BASE_ID or TABLE_NAME');
+            return new Response('Internal Server Error: Missing Airtable config.', { status: 500 });
+        }
+
         try {
             let links;
 
             if (cacheRefresh) {
                 console.log('Cache refresh triggered for:', category);
-                const freshData = await fetchFromAirtable(category, env.AIRTABLE_API_KEY);
+                const freshData = await fetchFromAirtable(category, AIRTABLE_API_KEY);
                 links = freshData.records || [];
 
                 console.log(`Fetched ${links.length} records. Writing to KV...`);
@@ -28,7 +37,7 @@ export default {
                     links = JSON.parse(cachedData);
                 } else {
                     console.log('Cache miss. Fetching from Airtable...');
-                    const airtableResponse = await fetchFromAirtable(category, env.AIRTABLE_API_KEY);
+                    const airtableResponse = await fetchFromAirtable(category, AIRTABLE_API_KEY, BASE_ID, TABLE_NAME);
                     links = airtableResponse.records || [];
 
                     // Store in KV after fetch
