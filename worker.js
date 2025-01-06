@@ -20,8 +20,9 @@ export default {
         try {
             // Step 1: Refresh Cache by Deleting
             if (cacheRefresh) {
-                await env.LINKS_CACHE.delete(category);
-                console.log(`Cache cleared for category: ${category}`);
+                    console.log(`Attempting to delete cache for category: ${category}`);
+                    const deleteResult = await env.LINKS_CACHE.delete(category);
+                    console.log(`Cache delete result for ${category}:`, deleteResult ? 'Success' : 'Failed');                          
             }
 
             // Step 2: Attempt to Fetch from Cache
