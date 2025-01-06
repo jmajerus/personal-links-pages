@@ -71,7 +71,8 @@
                 const container = document.getElementById('links');
                 container.innerHTML = '';  // Clear previous links
 
-                const links = data.airtableResponse || [];  // Access correct field
+                // Directly map to the worker response
+                const links = data || [];  
 
                 if (links.length === 0) {
                     container.innerHTML = '<p>No bookmarks available for this category.</p>';
