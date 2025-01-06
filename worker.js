@@ -20,7 +20,7 @@ export default {
 
             if (cacheRefresh) {
                 console.log('Cache refresh triggered for:', category);
-                const freshData = await fetchFromAirtable(category, AIRTABLE_API_KEY);
+                const freshData = await fetchFromAirtable(category, AIRTABLE_API_KEY, BASE_ID, TABLE_NAME);
                 links = freshData.records || [];
 
                 console.log(`Fetched ${links.length} records. Writing to KV...`);
