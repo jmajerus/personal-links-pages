@@ -4,8 +4,8 @@ export default {
     async fetch(request, env) {
         const url = new URL(request.url);
         const category = url.searchParams.get('category') || 'personal';
-        //const cacheRefresh = url.searchParams.get('cache') === 'refresh';
-        const cacheRefresh = true; // Set to true to force cache refresh
+        const cacheRefresh = url.searchParams.has('refresh');
+        //const cacheRefresh = true; // Set to true to force cache refresh
 
         const BASE_ID = env.BASE_ID || 'undefined';
         const TABLE_NAME = env.TABLE_NAME || 'undefined';
@@ -21,9 +21,8 @@ export default {
         try {
             // Step 1: Refresh Cache by Deleting
             if (cacheRefresh) {
-                    console.log(`Attempting to delete cache for category: ${category}`);
-                    const deleteResult = await env.LINKS_CACHE.delete(category);
-                    console.log(`Cache delete result for ${category}:`, deleteResult ? 'Success' : 'Failed');                          
+                console.log(`Forcing cache refresh for category: ${category}`);
+                await env.LINKS_CACHE.delete(category);         
             }
 
             // Step 2: Attempt to Fetch from Cache
