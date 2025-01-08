@@ -106,9 +106,9 @@
             const card = document.createElement('div');
             card.className = 'link-card';
             
-            // Check if the link points to the same page or another site
-            const samePage = url.includes(window.location.hostname);
-            
+            // Check if the URL matches the current origin and path (excluding query parameters)
+            const samePage = new URL(url, window.location.origin).pathname === window.location.pathname;
+
             card.innerHTML = `
                 <a href="${url}" target="${samePage ? '_self' : '_blank'}" class="link-anchor">
                     ${name}
@@ -117,12 +117,12 @@
             
             card.onclick = () => {
                 if (samePage) {
-                    window.location.href = url;  // Navigate in the same tab
+                    window.location.href = url;  // Navigate in the same tab for re-entrant links
                 } else {
-                    window.open(url, '_blank');  // Open in a new tab for external URLs
+                    window.open(url, '_blank');  // Open in a new tab for external links
                 }
             };
-    
+   
             return card;
         }
     </script>
