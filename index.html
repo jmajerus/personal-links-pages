@@ -99,32 +99,39 @@
                 console.error('Error fetching links:', error);
                 alert('Failed to load bookmarks. Please try again later.');
             });
-
         }
 
         function createCard(url, name) {
             const card = document.createElement('div');
             card.className = 'link-card';
-            
-            // Check if the URL matches the current origin and path (excluding query parameters)
-            const samePage = new URL(url, window.location.origin).pathname === window.location.pathname;
+
+            const urlObject = new URL(url, window.location.origin);
+            const sameOrigin = (urlObject.origin === window.location.origin);
+
+            // Default to _self unless clearly external
+            const target = sameOrigin ? '_self' : '_blank';
 
             card.innerHTML = `
-                <a href="${url}" target="${samePage ? '_self' : '_blank'}" class="link-anchor">
+                <a href="${url}" target="${target}" class="link-anchor">
                     ${name}
                 </a>
             `;
-            
-            card.onclick = () => {
-                if (samePage) {
-                    window.location.href = url;  // Navigate in the same tab for re-entrant links
-                } else {
-                    window.open(url, '_blank');  // Open in a new tab for external links
+
+            // Make the entire card clickable
+            card.onclick = (e) => {
+                // Avoid triggering twice if clicking on the <a> directly
+                if (e.target.tagName !== 'A') {
+                    if (sameOrigin) {
+                        window.location.href = url;  // Reload same tab for same-origin links
+                    } else {
+                        window.open(url, '_blank');  // Open external URLs in a new tab
+                    }
                 }
             };
-   
+
             return card;
         }
+
     </script>
 </body>
 </html>
