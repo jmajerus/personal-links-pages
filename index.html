@@ -105,12 +105,24 @@
         function createCard(url, name) {
             const card = document.createElement('div');
             card.className = 'link-card';
+            
+            // Check if the link points to the same page or another site
+            const samePage = url.includes(window.location.hostname);
+            
             card.innerHTML = `
-                <a href="${url}" target="_self" class="link-anchor">
+                <a href="${url}" target="${samePage ? '_self' : '_blank'}" class="link-anchor">
                     ${name}
                 </a>
             `;
-            card.onclick = () => window.open(url, '_blank');
+            
+            card.onclick = () => {
+                if (samePage) {
+                    window.location.href = url;  // Navigate in the same tab
+                } else {
+                    window.open(url, '_blank');  // Open in a new tab for external URLs
+                }
+            };
+    
             return card;
         }
     </script>
