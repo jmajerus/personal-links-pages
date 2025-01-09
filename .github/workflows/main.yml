@@ -1,19 +1,23 @@
-name: Deploy Worker to Cloudflare
-
+name: Deploy to Cloudflare Pages
 on:
   push:
     branches:
-      - main  # Deploy when pushing to main branch
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Publish to Cloudflare Workers
-        uses: cloudflare/wrangler-action@v3
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: personal-links
+          directory: ./  
+          
+
 
