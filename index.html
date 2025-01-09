@@ -107,6 +107,7 @@
 
             const urlObject = new URL(url, window.location.origin);
             const sameOrigin = (urlObject.origin === window.location.origin);
+            console.log('URLs: ', urlObject.origin, window.location.origin, sameOrigin);
 
             // Default to _self unless clearly external
             const target = sameOrigin ? '_self' : '_blank';
