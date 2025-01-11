@@ -1,5 +1,6 @@
 name = "personal-links"
 account_id = "eec00739050a8a4cbf359a1dedb8cad3"
+project_name = "personal-links"
 
 main = "index.html"  
 compatibility_date = "2025-01-04"
