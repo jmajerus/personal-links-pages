@@ -16,7 +16,8 @@ jobs:
         run: npm install -g wrangler
       
       - name: Deploy Pages
-        run: wrangler pages deploy ./ --branch production 
+        run: wrangler pages deploy ./ --account-id eec00739050a8a4cbf359a1dedb8cad3
+
         env:
           CLOUDFLARE_API_TOKEN: ${{secrets.EDIT_CLOUDFLARE_WORKERS_TOKEN}}
           CLOUDFLARE_ACCOUNT_ID: ${{secrets.EDIT_CLOUDFLARE_ACCOUNT_ID}}
