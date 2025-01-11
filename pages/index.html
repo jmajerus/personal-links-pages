@@ -1,0 +1,138 @@
+<!-- Uses a Cloudflare worker to fetch name/URL pair data from an Airtable view and display it on the page -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Links</title>
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-image: url('images/background.jpg');
+            background-size: cover;
+            background-attachment: fixed;  /* Keeps the background stationary */
+            background-position: center;
+            height: 100%;
+            overflow-y: scroll;  /* Allows scrolling of the content */
+        }
+        .container {
+            margin: 0 auto;
+            max-width: 600px;
+        }
+        .link-card {
+            margin: 20px;
+            padding: 20px;
+            background-color: rgb(198, 241, 251);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+        .link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        .link-card a {
+            text-decoration: none;
+            color: #0078D7;
+            font-size: 1.5em;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="page-title">Follow Me</h1>
+    <div class="container">
+        <div id="links"></div>
+    </div>
+
+    <script>
+        // Fetch links and dynamically update heading
+        fetchLinks();
+
+        function fetchLinks() {
+            // Capture full query string from current URL
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const category = urlParams.get('category') || 'personal';
+
+            // Update heading based on category
+            const pageTitle = document.getElementById('page-title');
+            if (category.toLowerCase() === 'bookmarks') {
+                pageTitle.textContent = 'Bookmarks';
+            }
+            else if (category !== 'personal') {
+                pageTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1) + ' Bookmarks';
+            }
+    
+            // Append the query string to the worker request
+            const apiUrl = `https://fetch-airtable-data.jmajerus.workers.dev/${queryString}`;
+
+            fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to fetch data');
+                return response.json();
+            })
+            .then(data => {
+                const container = document.getElementById('links');
+                container.innerHTML = '';  // Clear previous links
+
+                // Directly map to the worker response
+                const links = data || [];  
+
+                if (links.length === 0) {
+                    container.innerHTML = '<p>No bookmarks available for this category.</p>';
+                    return;
+                }
+
+                links.sort((a, b) => a.fields.Name.localeCompare(b.fields.Name));
+                links.forEach(record => {
+                    if (!record.fields.URL || !record.fields.Name) {
+                        console.warn('Invalid record:', record);
+                        return;
+                    }
+                    const linkCard = createCard(record.fields.URL, record.fields.Name);
+                    container.appendChild(linkCard);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching links:', error);
+                alert('Failed to load bookmarks. Please try again later.');
+            });
+        }
+
+        function createCard(url, name) {
+            const card = document.createElement('div');
+            card.className = 'link-card';
+
+            const urlObject = new URL(url, window.location.origin);
+            const sameOrigin = (urlObject.origin === window.location.origin);
+            console.log('URLs: ', urlObject.origin, window.location.origin, sameOrigin);
+
+            // Default to _self unless clearly external
+            const target = sameOrigin ? '_self' : '_blank';
+
+            card.innerHTML = `
+                <a href="${url}" target="${target}" class="link-anchor">
+                    ${name}
+                </a>
+            `;
+
+            // Make the entire card clickable
+            card.onclick = (e) => {
+                // Avoid triggering twice if clicking on the <a> directly
+                if (e.target.tagName !== 'A') {
+                    if (sameOrigin) {
+                        window.location.href = url;  // Reload same tab for same-origin links
+                    } else {
+                        window.open(url, '_blank');  // Open external URLs in a new tab
+                    }
+                }
+            };
+
+            return card;
+        }
+
+    </script>
+</body>
+</html>

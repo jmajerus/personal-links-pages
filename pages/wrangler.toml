@@ -1,0 +1,17 @@
+name = "personal-links"
+project_name = "personal-links"
+
+main = "index.html"  
+compatibility_date = "2025-01-04"
+
+[observability.logs]
+enabled = true
+
+[env.staging]
+
+
+[env.production]
+route = "personal-links-21x.jmajerus.workers.dev/*"
+zone_id = "760804baffbf3cdb28094cab02683ea4"
+account_id = "eec00739050a8a4cbf359a1dedb8cad3"
+
