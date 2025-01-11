@@ -1,0 +1,21 @@
+name: Deploy Worker
+on:
+  push:
+    paths:
+      - 'worker/**'  # Trigger only on changes to the worker directory
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Publish to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{secrets.EDIT_CLOUDFLARE_WORKERS_TOKEN }}
+          command: publish --env production --verbose
+
+          
+          

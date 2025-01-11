@@ -16,10 +16,9 @@ enabled = true
 workers_dev = true
 
 [env.production]
-route = "api.majerus.us/*"
+route = "fetch-airtable-data.jmajerus.workers.dev/*"
 zone_id = "760804baffbf3cdb28094cab02683ea4"
 kv_namespaces = [
   { binding = "LINKS_CACHE", id = "02ae18d056774dd8b0619180c767a3e6" }
 ]
-
 
