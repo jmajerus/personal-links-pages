@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'pages/**'  # Trigger only on changes to the public directory
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -17,4 +18,4 @@ jobs:
       - name: Deploy Pages
         run: wrangler pages deploy ./
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.EDIT_CLOUDFLARE_WORKERS_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{secrets.EDIT_CLOUDFLARE_WORKERS_TOKEN}}

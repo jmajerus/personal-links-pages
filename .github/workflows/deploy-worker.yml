@@ -3,7 +3,8 @@ on:
   push:
     paths:
       - 'worker/**'  # Trigger only on changes to the worker directory
-
+  workflow_dispatch:
+  
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -17,7 +18,7 @@ jobs:
       - name: Publish to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{secrets.EDIT_CLOUDFLARE_WORKERS_TOKEN }}
+          apiToken: ${{secrets.EDIT_CLOUDFLARE_WORKERS_TOKEN}}
           command: publish --env production --verbose
 
           
