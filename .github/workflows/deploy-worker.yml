@@ -19,7 +19,7 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{secrets.EDIT_CLOUDFLARE_WORKERS_TOKEN}}
-          command: publish --env production --verbose
+          command: publish --env production 
 
           
           
