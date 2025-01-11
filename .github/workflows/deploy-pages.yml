@@ -10,6 +10,10 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
+
+      - name: Install Wrangler CLI
+        run: npm install -g wrangler
+      
       - name: Deploy Pages
         run: wrangler pages deploy ./
         env:
