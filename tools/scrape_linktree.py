@@ -1,6 +1,7 @@
 import requests
 import csv
 import sys
+import re
 from bs4 import BeautifulSoup
 
 def scrape_linktree(linktree_url):
@@ -13,24 +14,35 @@ def scrape_linktree(linktree_url):
 
     soup = BeautifulSoup(response.text, "html.parser")
 
-    # Find all links
+    # Store links and their corresponding categories
     links_data = []
-    collections = {}
+    current_category = None  # Start without a category
 
-    # Find collections (if any)
-    for collection in soup.find_all("div", class_="collection-container"):
-        collection_name = collection.find("h2")
-        if collection_name:
-            collection_title = collection_name.text.strip()
-            # Store links under the collection
-            for a in collection.find_all("a", href=True):
-                links_data.append([a.text.strip(), a['href'], collection_title])
+    # Step 1: Extract personal links from the social media section
+    for social_link in soup.find_all("a", {"data-testid": "SocialIcon"}):
+        title = social_link.get("title", "").strip()
+        href = social_link["href"]
+        links_data.append([title, href, "personal"])
 
-    # Find standalone links outside collections
-    for a in soup.find_all("a", href=True):
-        # Skip links that were already added via collections
-        if a['href'] not in [item[1] for item in links_data]:
-            links_data.append([a.text.strip(), a['href'], "personal"])
+    # Step 2: Extract categorized links from collections
+    for element in soup.find_all(["h3", "a"], recursive=True):
+        if element.name == "h3" and "sc-dlfnbm" in element.get("class", []):
+            # Update category when encountering a new collection heading
+            current_category = element.get_text(strip=True)
+
+        elif element.name == "a" and element.get("data-testid") == "LinkButton":
+            # Extract link information
+            title = element.get_text(" ", strip=True) or element.get("title", "").strip()
+            href = element["href"]
+
+            # Fix duplication issue (e.g., "InstagramInstagram" → "Instagram")
+            title = re.sub(r'\b(\w+)\s*\1\b', r'\1', title)
+
+            # Assign category based on last seen collection
+            category = current_category if current_category else "Uncategorized"
+
+            # Store the link with its category
+            links_data.append([title, href, category])
 
     # Generate a CSV file
     csv_filename = "linktree_links.csv"
