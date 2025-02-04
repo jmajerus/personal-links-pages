@@ -19,7 +19,7 @@
         }
         .container {
             margin: 0 auto;
-            max-width: 500px;
+            max-width: 550px;
         }
         .link-card {
             margin: 20px;
@@ -27,7 +27,6 @@
             background-color: rgb(198, 241, 251);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
-            transition: 0.3s;
         }
         .link-card:hover {
             transform: translateY(-5px);
@@ -35,9 +34,22 @@
         }
         .link-card a {
             text-decoration: none;
-            color: #0078D7;
+            color: #0050C0;
             font-size: 1.5em;
         }
+        /* Base card styles */
+        .link-card {
+            position: relative;
+            text-align: center; /* Keeps text centered */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        /* Add a subtle top border for submenu items */
+        .submenu-item {
+            border-top: 5px solid #30C0F0; /* Soft pastel blue */
+            border-radius: 8px 8px 0 0; /* Rounded top corners for "folder" effect */
+        }
+
     </style>
 </head>
 <body>
@@ -87,11 +99,14 @@
 
                 links.sort((a, b) => a.fields.Name.localeCompare(b.fields.Name));
                 links.forEach(record => {
-                    if (!record.fields.URL || !record.fields.Name) {
-                        console.warn('Invalid record:', record);
-                        return;
-                    }
+                    // Create a card for each link
                     const linkCard = createCard(record.fields.URL, record.fields.Name);
+
+                    // Add icon for submenu links
+                    if (record.fields.URL.includes("category=")) {
+                        linkCard.classList.add("submenu-item"); // Apply to the entire card
+                    }
+  
                     container.appendChild(linkCard);
                 });
             })
