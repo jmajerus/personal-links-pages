@@ -103,7 +103,7 @@
                     const linkCard = createCard(record.fields.URL, record.fields.Name);
 
                     // Add icon for submenu links
-                    if (record.fields.URL.includes("category=")) {
+                    if (record.fields.URL.includes("category=") || record.fields.URL.includes("list=")) {
                         linkCard.classList.add("submenu-item"); // Apply to the entire card
                     }
   
