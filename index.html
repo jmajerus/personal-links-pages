@@ -66,7 +66,7 @@
             // Capture full query string from current URL
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
-            const category = urlParams.get('category') || 'personal';
+            const category = urlParams.get('list') || urlParams.get('category') || 'personal';
 
             // Update heading based on category
             const pageTitle = document.getElementById('page-title');
