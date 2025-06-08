@@ -89,8 +89,8 @@
                 const container = document.getElementById('links');
                 container.innerHTML = '';  // Clear previous links
 
-                // Directly map to the worker response
-                const links = data || [];  
+                // Handle either raw array or Airtable-style object
+                const links = Array.isArray(data) ? data : (data.records || []);
 
                 if (links.length === 0) {
                     container.innerHTML = '<p>No bookmarks available for this category.</p>';
